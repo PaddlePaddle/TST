@@ -70,7 +70,7 @@ class MatmulEagerTest(unittest.TestCase):
         A = torch.randn(M, K, dtype=torch.float32)
         B = torch.randn(K, N, dtype=torch.float32)
         C = matmul_kernel(A, B)
-        print(matmul_kernel.graph_module.graph)
+        print(matmul_kernel.graph_module.code)
 
         C_ref = torch.matmul(A, B)
         np.testing.assert_allclose(
