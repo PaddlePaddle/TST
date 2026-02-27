@@ -1,6 +1,6 @@
 import torch
 import torch.fx as fx
-from typing import Any, Union, List
+from typing import Any
 
 # --- Core Functor Implementation ---
 

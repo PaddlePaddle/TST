@@ -46,7 +46,6 @@ class TrivialOpsFolderPass:
 
 def main():
     import torch
-    import operator
 
     # Scenario: Multi-input model
     class M(torch.nn.Module):

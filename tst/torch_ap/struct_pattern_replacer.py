@@ -1,7 +1,6 @@
 import torch
 import torch.fx as fx
-from typing import Dict, List, Set, Union, Tuple, Optional, Callable
-from dataclasses import dataclass
+from typing import Dict, List, Set, Tuple, Callable
 
 # ImportFrom sources (Logical Reference)
 from tst.torch_ap.struct_matcher import StructMatcher
@@ -114,7 +113,7 @@ class StructPatternReplacer:
 def test_main():
     # Setup shared patterns
     p_add = fx.symbolic_trace(lambda x: torch.add(x, 1.0))
-    repl_mul = lambda ctx: fx.symbolic_trace(lambda x: torch.mul(x, 10.0))
+    repl_mul = lambda ctx: fx.symbolic_trace(lambda x: torch.mul(x, 10.0))  # noqa
     replacer = StructPatternReplacer(p_add, repl_mul)
 
     # 1. Multi-match (Standard)
@@ -202,7 +201,7 @@ def test_main():
     # 10. Multi-Output pattern (Tuple)
     p10 = fx.symbolic_trace(lambda x: (x + 1.0, x + 2.0))
     t10 = fx.symbolic_trace(lambda x: (x + 1.0, x + 2.0, x + 3.0))
-    repl10 = lambda ctx: fx.symbolic_trace(lambda x: (x * 10.0, x * 20.0))
+    repl10 = lambda ctx: fx.symbolic_trace(lambda x: (x * 10.0, x * 20.0))  # noqa
     assert StructPatternReplacer(p10, repl10)(t10).modified
     print("Test 10: Multi-Output Pattern Passed")
 

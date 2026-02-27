@@ -1,12 +1,19 @@
 import torch
 
+
 def fusibility_of(epilogue_func) -> bool:
     """Check if an epilogue function is fusible."""
     from tst.torch_ap.torch_ap_trace import torch_ap_trace
-    from tst.torch_ap.concrete_pass.demo_matmul_epilogue_replacer_pass import DemoMatmulEpilogueReplacerPass
+    from tst.torch_ap.concrete_pass.demo_matmul_epilogue_replacer_pass import (
+        DemoMatmulEpilogueReplacerPass,
+    )
     from tst.torch_ap.trivial_ops_folder_pass import TrivialOpsFolderPass
-    from tst.torch_ap.concrete_pass.matmul_epilogue_util import get_matmul_epilogue_arg_name_to_is_mm_out
-    from tst.torch_ap.concrete_pass.matmul_epilogue_extractor_pass import MatmulEpilogueExtractorPass
+    from tst.torch_ap.concrete_pass.matmul_epilogue_util import (
+        get_matmul_epilogue_arg_name_to_is_mm_out,
+    )
+    from tst.torch_ap.concrete_pass.matmul_epilogue_extractor_pass import (
+        MatmulEpilogueExtractorPass,
+    )
     from tst.torch_ap.concrete_pass.matmul_epilogue_fusibility_predictor import (
         MatmuEpilogueFusibilityPredicator,
     )
