@@ -1,6 +1,5 @@
-import torch
 import torch.fx as fx
-from typing import Dict, List, Set, Union, Any, Tuple, Optional, Generator
+from typing import Dict, List, Set, Union, Tuple
 
 
 # Viba type-aliases

@@ -39,8 +39,12 @@ class MatmuEpilogueFusibilityPredicator:
 
     def __init__(
         self,
-        config_pattern_rewriters: Callable[[List[AccessTopoRule]], List[AccessTopoRule]],
-        config_pattern_removers: Optional[Callable[[List[ConfirmPattern]], List[ConfirmPattern]]] = None,
+        config_pattern_rewriters: Callable[
+            [List[AccessTopoRule]], List[AccessTopoRule]
+        ],
+        config_pattern_removers: Optional[
+            Callable[[List[ConfirmPattern]], List[ConfirmPattern]]
+        ] = None,
     ):
         self._config_pattern_rewriters = config_pattern_rewriters
         self._config_pattern_remover_overrider = config_pattern_removers
@@ -51,17 +55,34 @@ class MatmuEpilogueFusibilityPredicator:
 
     def _default_rewriters(self) -> List[AccessTopoRule]:
         return [
-            AccessTopoRule("y=x**2", "y=relu(x)", lambda x: x**2, lambda x: torch.relu(x)),
-            AccessTopoRule("y=tanh(x)", "y=relu(x)", lambda x: torch.tanh(x), lambda x: torch.relu(x)),
-            AccessTopoRule("z=DS(x)+y", "z=DS(US(x,y))", lambda x, y: DS(x) + y, lambda x, y: DS(US(x, y))),
-            AccessTopoRule("z=y+DS(x)", "z=DS(US(x,y))", lambda x, y: y + DS(x), lambda x, y: DS(US(x, y))),
-            AccessTopoRule("z=relu(DS(x))", "z=DS(x)", lambda x: torch.relu(DS(x)), lambda x: DS(x)),
+            AccessTopoRule(
+                "y=x**2", "y=relu(x)", lambda x: x**2, lambda x: torch.relu(x)
+            ),
+            AccessTopoRule(
+                "y=tanh(x)",
+                "y=relu(x)",
+                lambda x: torch.tanh(x),
+                lambda x: torch.relu(x),
+            ),
+            AccessTopoRule(
+                "z=DS(x)+y",
+                "z=DS(US(x,y))",
+                lambda x, y: DS(x) + y,
+                lambda x, y: DS(US(x, y)),
+            ),
+            AccessTopoRule(
+                "z=y+DS(x)",
+                "z=DS(US(x,y))",
+                lambda x, y: y + DS(x),
+                lambda x, y: DS(US(x, y)),
+            ),
+            AccessTopoRule(
+                "z=relu(DS(x))", "z=DS(x)", lambda x: torch.relu(DS(x)), lambda x: DS(x)
+            ),
         ]
 
     def _default_removers(
-        self,
-        mm_epi: fx.GraphModule,
-        mm_out_idx: int
+        self, mm_epi: fx.GraphModule, mm_out_idx: int
     ) -> List[ConfirmPattern]:
         """Generate default ConfirmPatterns from epilogue structure."""
         arg_list = self._get_arg_list(mm_epi)
@@ -73,23 +94,27 @@ class MatmuEpilogueFusibilityPredicator:
         removers: List[ConfirmPattern] = []
 
         for out_idx in output_indices:
-            removers.append(ConfirmPattern(
-                f"store(DS(x, {out_idx}))",
-                lambda x, idx=out_idx: store(DS(x), idx)
-            ))
+            removers.append(
+                ConfirmPattern(
+                    f"store(DS(x, {out_idx}))", lambda x, idx=out_idx: store(DS(x), idx)
+                )
+            )
 
         for arg_name in other_arg_names:
-            removers.append(ConfirmPattern(
-                f"US(x, load(y, {arg_name}))",
-                lambda x, y, n=arg_name: US(x, load(y, n))
-            ))
+            removers.append(
+                ConfirmPattern(
+                    f"US(x, load(y, {arg_name}))",
+                    lambda x, y, n=arg_name: US(x, load(y, n)),
+                )
+            )
 
         if mm_out_arg_names:
             mm_arg_name = mm_out_arg_names[0]
-            removers.append(ConfirmPattern(
-                f"load(x, {mm_arg_name})",
-                lambda x, n=mm_arg_name: load(x, n)
-            ))
+            removers.append(
+                ConfirmPattern(
+                    f"load(x, {mm_arg_name})", lambda x, n=mm_arg_name: load(x, n)
+                )
+            )
 
         return removers
 
@@ -98,7 +123,10 @@ class MatmuEpilogueFusibilityPredicator:
         placeholder_names = [n.name for n in gm.graph.nodes if n.op == "placeholder"]
         if len(placeholder_names) == 0:
             return []
-        return [(name, i == len(placeholder_names) - 1) for i, name in enumerate(placeholder_names)]
+        return [
+            (name, i == len(placeholder_names) - 1)
+            for i, name in enumerate(placeholder_names)
+        ]
 
     def _get_output_indices(self, gm: fx.GraphModule) -> List[Optional[int]]:
         out_node = next(n for n in gm.graph.nodes if n.op == "output")
@@ -107,11 +135,7 @@ class MatmuEpilogueFusibilityPredicator:
             return list(range(len(res)))
         return [None]
 
-    def __call__(
-        self,
-        mm_epi: fx.GraphModule,
-        mm_out_as_epi_in_index: int
-    ) -> bool:
+    def __call__(self, mm_epi: fx.GraphModule, mm_out_as_epi_in_index: int) -> bool:
         """
         Predict if the matmul epilogue is fusible.
 
@@ -137,7 +161,9 @@ class MatmuEpilogueFusibilityPredicator:
 
         for remover in removers:
             pattern_gm = torch_ap_trace(remover.pattern_func)
-            replacement_gm = torch_ap_trace(remover.pattern_func)  # Identity replacement
+            replacement_gm = torch_ap_trace(
+                remover.pattern_func
+            )  # Identity replacement
 
             matches = subgraph_rewriter.replace_pattern(
                 working_gm, pattern_gm, replacement_gm

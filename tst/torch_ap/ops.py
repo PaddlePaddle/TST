@@ -1,5 +1,4 @@
 import torch
-import torch.fx as fx
 
 
 def down_spider(x):

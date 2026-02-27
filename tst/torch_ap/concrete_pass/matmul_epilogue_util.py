@@ -1,8 +1,7 @@
 import torch
 import torch.fx as fx
 
-from tst.torch_ap.ap_pass import ApPass, PassResult
-from tst.torch_ap.match_replace_util import MatchContext
+from tst.torch_ap.ap_pass import ApPass
 
 
 def get_matmul_epilogue_arg_name_to_is_mm_out(graph_module) -> list[(str, bool)]:
@@ -10,7 +9,6 @@ def get_matmul_epilogue_arg_name_to_is_mm_out(graph_module) -> list[(str, bool)]
 
 
 class SimpleTracer(fx.Tracer):
-
     def __init__(self, leaf_module_classes):
         super().__init__()
         self.leaf_module_classes = leaf_module_classes
@@ -64,7 +62,6 @@ class MatmulEpilogueArgNameToIsMmOutGetter(ApPass):
 
 
 if __name__ == "__main__":
-
     # Target: Matmul -> MatmulEpilogue (call_module)
     class TargetModel(torch.nn.Module):
         def __init__(self):
@@ -74,7 +71,6 @@ if __name__ == "__main__":
             return torch.tanh(torch.matmul(a, b) - 2.0)
 
     t_gm = fx.GraphModule(TargetModel(), fx.Tracer().trace(TargetModel()))
-    from torch.fx.passes.infra.pass_manager import PassManager
     from tst.torch_ap.trivial_ops_folder_pass import TrivialOpsFolderPass
 
     pass_mgr = TrivialOpsFolderPass()

@@ -2,7 +2,6 @@ import torch
 import torch.fx as fx
 
 from tst.torch_ap.ap_pass import ApPass
-from tst.torch_ap.match_replace_util import MatchContext
 from tst.torch_ap.torch_ap_trace import torch_ap_trace
 
 
@@ -51,7 +50,6 @@ if __name__ == "__main__":
             return x - self.bias
 
     class SimpleTracer(fx.Tracer):
-
         def __init__(self, leaf_module_classes):
             super().__init__()
             self.leaf_module_classes = leaf_module_classes

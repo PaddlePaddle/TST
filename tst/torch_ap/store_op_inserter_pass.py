@@ -1,6 +1,6 @@
 import torch
 import torch.fx as fx
-from typing import List, Union
+from typing import Union
 from tst.torch_ap.load_store_op import store
 from torch.fx.passes.infra.pass_manager import PassResult
 from tst.torch_ap.torch_ap_trace import torch_ap_trace

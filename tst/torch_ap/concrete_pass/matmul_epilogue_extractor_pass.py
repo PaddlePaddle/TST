@@ -2,11 +2,9 @@ import torch
 import torch.fx as fx
 
 from tst.torch_ap.ap_pass import ApPass, PassResult
-from tst.torch_ap.match_replace_util import MatchContext
 
 
 class SimpleTracer(fx.Tracer):
-
     def __init__(self, leaf_module_classes):
         super().__init__()
         self.leaf_module_classes = leaf_module_classes
@@ -46,7 +44,6 @@ class MatmulEpilogueExtractorPass(ApPass):
 
 
 if __name__ == "__main__":
-
     # Target: Matmul -> MatmulEpilogue (call_module)
     class TargetModel(torch.nn.Module):
         def __init__(self):

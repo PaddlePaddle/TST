@@ -1,4 +1,3 @@
-import torch
 import torch.fx as fx
 from typing import List, Tuple, Callable
 from tst.torch_ap.spider import down_spider
@@ -63,7 +62,7 @@ def main(gms_with_pos: List[Tuple[fx.GraphModule, int]]) -> None:
 
     # --- Inline Logic ---
     for gm, input_idx in gms_with_pos:
-        inserter = DownSpiderInserter(input_idx)
+        inserter = DownSpiderInserterPass(input_idx)
         inserter(gm)
 
 
